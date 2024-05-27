@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            display: block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Python Code</h1>
+    <code>
+        from flask import Flask, request, render_template<br>
+        import pymysql<br><br>
+
+        app = Flask(__name__)<br><br>
+
+        def login_chk():<br>
+            pass<br><br>
+
+        @app.route('/')<br>
+        def index():<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;return render_template('index.html')<br><br>
+
+        @app.route('/login', methods=['GET'])<br>
+        def login():<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;pw = request.args.get('pw', '')<br><br>
+            
+            &nbsp;&nbsp;&nbsp;&nbsp;# 필터링 로직<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;if any(keyword in pw.lower() for keyword in ['prob', '_', '.', '()', 'or', 'and', 'substr(', '=']):<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return "필터링에 걸렸습니다~"<br><br>
+            
+            &nbsp;&nbsp;&nbsp;&nbsp;# 데이터베이스 연결<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;conn = pymysql.connect(host='localhost',<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user='root',<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password='1234',<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;database='datainjection',<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cursorclass=pymysql.cursors.DictCursor)  <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;cursor = conn.cursor()<br><br>
+            
+            &nbsp;&nbsp;&nbsp;&nbsp;# 첫 번째 쿼리 (파라미터화된 쿼리 사용)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;query = "SELECT id FROM roro3 WHERE id='guest' AND pw=%s"<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;cursor.execute(query, (pw,))<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;result = cursor.fetchone()<br><br>
+            
+            &nbsp;&nbsp;&nbsp;&nbsp;response = f"&lt;hr&gt;query : &lt;strong&gt;SELECT id FROM roro3 WHERE id='guest' AND pw='{pw}'&lt;/strong&gt;&lt;hr&gt;&lt;br&gt;"<br><br>
+            
+            &nbsp;&nbsp;&nbsp;&nbsp;if result:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response += f"&lt;h2&gt;Hello!~ {result['id']}&lt;/h2&gt;"<br><br>
+            
+            &nbsp;&nbsp;&nbsp;&nbsp;# 두 번째 쿼리 (파라미터화된 쿼리 사용)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;query = "SELECT id, pw FROM roro3 WHERE id='admin' AND pw=%s"<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;cursor.execute(query, (pw,))<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;result = cursor.fetchone()<br><br>
+
+            &nbsp;&nbsp;&nbsp;&nbsp;if result and 'pw' in result and result['pw'] == pw:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response += "&lt;h2&gt;성공 했습니다!!&lt;/h2&gt;"<br><br>
+            
+            &nbsp;&nbsp;&nbsp;&nbsp;conn.close()<br><br>
+            
+            &nbsp;&nbsp;&nbsp;&nbsp;return response<br><br>
+
+        if __name__ == '__main__':<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;app.run(debug=True)<br>
+    </code>
+</body>
+</html>

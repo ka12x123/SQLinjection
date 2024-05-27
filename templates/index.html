@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login페이지</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+</head>
+
+<body>
+    <h1>Login</h1>
+    <form id="loginForm">
+        <label for="pw">Password:</label>
+        <input type="text" id="pw" name="pw">
+        <button type="submit">Login</button>
+    </form>
+    <div id="response">
+        <hr>query : <strong>SELECT id FROM roro3 WHERE id='guest' AND pw=</strong><hr>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const pw = document.getElementById('pw').value;
+
+            fetch(`/login?pw=${encodeURIComponent(pw)}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('response').innerHTML = data;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('response').innerHTML = 'An error occurred';
+                });
+        });
+    </script>
+    <a href="http://127.0.0.1:5000/souce">소스 보기</a>
+</body>
+
+</html>
